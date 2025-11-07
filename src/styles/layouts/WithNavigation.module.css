@@ -1,0 +1,27 @@
+.layout {
+    display: flex;
+    padding: 16px;
+    max-width: 1280px;
+    margin: auto;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 4;
+    padding: 20px 24px 20px 24px;
+}
+
+.main {
+    flex: 2;
+    padding: 20px;
+}
+
+@media (max-width: 768px) {
+  .layout {
+    flex-direction: column;
+  }
+  
+  .main {
+    width: 100%;
+    padding: 0px;
+    
+  }
+}

@@ -1,0 +1,133 @@
+.home_page{
+    padding: 16px;
+    align-content: center;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 1);
+}
+.img_title{
+    width: 1103px;
+    height: 486px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(90.00deg, rgba(0, 0, 0, 0.1),rgba(0, 0, 0, 0.4) 100%);
+    background-image: url('https://content.r9cdn.net/rimg/dimg/b0/1c/7746c81c-city-14713-163f5192361.jpg?width=1366&height=768&xhint=1535&yhint=594&crop=true');
+    background-size: cover;
+    background-position: center;
+    
+}
+
+.title{
+    max-width: 784px;
+    max-height: 120px;
+    color: rgba(255, 255, 255, 1);
+    font-family: Manrope;
+    font-size: 48px;
+    font-weight: 800;
+    line-height: 60px;
+    letter-spacing: -2px;
+    text-align: center;
+}
+.description{
+    max-width: 771px;
+    max-height: 48px;
+    color: rgba(255, 255, 255, 1);
+    font-family: Manrope;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 24px;
+    letter-spacing: 0px;
+    text-align: center;
+}
+
+.info_block{
+    max-width: 1135px;
+    margin: 62px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(310px, 397px));
+    justify-content: space-around;
+    justify-items: anchor-center
+    
+}
+@media screen and (max-width: 930px){
+    .info_block{
+    grid-template-columns: repeat(3, minmax(260px, 310px));
+    
+}
+}
+
+@media screen and (max-width: 810px){
+    .info_block{
+    max-width: 1135px;
+    margin: 12px;
+    margin-top:39px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    justify-content: space-around;
+    justify-items: anchor-center;
+    gap: 10px
+}}
+
+@media screen and (max-width: 610px){
+    .info_block{
+        margin: auto;
+        margin-top:21px;
+        grid-template-columns: repeat(1, 1fr);
+        gap: 15px;
+    }
+    .title{
+        color: rgba(255, 255, 255, 1);
+        font-family: Manrope;
+        font-size: 28px;
+        font-weight: 800;
+        line-height: 32px;
+        letter-spacing: -2px;
+        text-align: center;
+    }
+    .description{
+        font-family: Manrope;
+        font-size: 10px;
+        font-weight: 400;
+        line-height: 12px;
+        letter-spacing: 0px;
+        text-align: center;
+    }
+    .img_title{
+        width: 100%;
+        height: 370px;
+    }
+}
+
+.slogan{
+    justify-content: right;
+    align-items: end;
+}
+
+.slogan h1{
+    color: rgba(23, 18, 23, 1);
+
+    font-family: Manrope;
+    font-size: 36px;
+    font-weight: 800;
+    line-height: 45px;
+    letter-spacing: -1px;
+    text-align: center;
+}
+
+.popular{
+    margin-top:105px;
+    margin-bottom: 35px;
+    color: rgba(23, 18, 23, 1);
+    font-size: 56px;
+    font-weight: 800;
+    line-height: 45px;
+    letter-spacing: -1px;
+    text-align: center;
+    text-transform: uppercase;
+}

@@ -62,7 +62,7 @@ export default function Navigation() {
           </svg>
         </button>
         <div className={styles.page_title}>
-          <h1>{pathname}</h1>
+          {pathname === '/friends'?<h1>Друзья</h1> : <h1>Сообщения</h1>}
         </div>
         {isMenuOpen && (
           <div className="md:hidden absolute top-16 left-0 right-0 bg-white z-50">

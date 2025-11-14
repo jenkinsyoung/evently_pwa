@@ -54,20 +54,20 @@ export default function NotificationDropdown() {
             z-50
             w-80            
             max-w-sm 
-            bg-neutral-primary-soft 
+            bg-white 
             rounded-base 
             shadow 
             divide-y 
             divide-default-medium
           "
         >
-          <div className="px-4 py-2 font-medium text-center text-body bg-neutral-secondary-medium rounded-t-base">
+          <div className="px-4 py-2 font-medium text-center text-body bg-white rounded-t-base">
             Notifications
           </div>
 
           <div className="divide-y divide-default">
 
-            <a className="flex px-4 py-3 hover:bg-neutral-secondary-medium cursor-pointer">
+            <a className="flex px-4 py-3 hover:bg-white cursor-pointer">
               <div className="shrink-0 relative">
                 <img
                   className="rounded-full w-11 h-11"
@@ -101,7 +101,7 @@ export default function NotificationDropdown() {
 
           </div>
 
-          <a className="block py-2 font-medium text-center text-body bg-neutral-secondary-medium hover:bg-neutral-tertiary-medium rounded-b-base cursor-pointer">
+          <a className="block py-2 font-medium text-center text-body bg-white hover:bg-neutral-tertiary-medium rounded-b-base cursor-pointer">
             <div className="inline-flex items-center ">
               <svg
                 className="w-5 h-5 me-1.5 text-body"

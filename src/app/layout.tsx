@@ -1,5 +1,3 @@
-import { AuthProvider } from '@/contexts/AuthContext'
-import { EventProvider} from '@/contexts'
 import Header from '@/components/common/Header'
 import Footer from '@/components/common/Footer'
 import './globals.css'
@@ -33,8 +31,6 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <title>Evently - Find Your Events</title>
       </head>
       <body className={inter.className} suppressHydrationWarning>
-        <AuthProvider>
-          <EventProvider>
             <div className="min-h-screen flex flex-col bg-white">
               <Header />
               <main className="flex-grow">
@@ -42,8 +38,6 @@ export default function RootLayout({ children }: RootLayoutProps) {
               </main>
               <Footer />
             </div>
-          </EventProvider>
-        </AuthProvider>
       </body>
     </html>
   )

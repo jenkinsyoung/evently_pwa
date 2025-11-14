@@ -52,7 +52,6 @@ export const event: Event = {
     registeredEvents: ['2bbdb11b-50e7-4a97-a1f7-dbafa9d1f299'], 
     createdAt: new Date(),
     updatedAt: new Date()
-    // другие поля пользователя
   },
   capacity: 1000,
   category: ['рок', 'музыка', 'концерт'],

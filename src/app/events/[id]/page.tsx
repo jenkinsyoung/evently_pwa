@@ -3,7 +3,7 @@ import React from 'react'
 import { event } from '@/types';
 import styles from '@/styles/pages/EventIdPage.module.css'
 import Link from 'next/link';
-import Button from '@/components/common/Button';
+import Button from '@/components/common/btn/Button';
 
 
 function EventIdPage() {

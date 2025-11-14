@@ -6,7 +6,7 @@ export function middleware(request: NextRequest) {
 
   const path = request.nextUrl.pathname;
 
-  const protectedRoutes = ["/my-events"]
+  const protectedRoutes = ["/my-events", "/account"]
   //"/account", "/friends", "/messages"
   const isProtected = protectedRoutes.some((route) =>
     path.startsWith(route)
@@ -21,7 +21,7 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: [
         "/my-events/:path*",
-        "/account/:path*",
+        "/account",
         "/friends/:path*",
         "/messages/:path*"
     ],

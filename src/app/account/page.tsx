@@ -1,6 +1,6 @@
 "use client"
 
-import Button from '@/components/common/Button'
+import Button from '@/components/common/btn/Button'
 import React from 'react'
 import styles from '@/styles/pages/ProfilePage.module.css'
 import {user} from '@/types'

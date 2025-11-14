@@ -1,5 +1,5 @@
-import Header from '@/components/common/Header'
-import Footer from '@/components/common/Footer'
+import Header from '@/components/common/header-footer/Header'
+import Footer from '@/components/common/header-footer/Footer'
 import './globals.css'
 import { ReactNode } from 'react'
 import { Inter, Manrope } from 'next/font/google'

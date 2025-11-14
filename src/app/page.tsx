@@ -3,7 +3,7 @@
 import styles from '@/styles/pages/HomePage.module.css'
 import { Description } from '@/components/common/DescBox'
 import DescBox from '@/components/common/DescBox';
-import Button from '@/components/common/Button';
+import Button from '@/components/common/btn/Button';
 
 const events: Description[] = [
   {

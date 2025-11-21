@@ -4,13 +4,13 @@
 }
 
 
-.card_list{
+/* .card_list{
     display: grid;
     grid-template-columns: repeat(3, 440px);
     column-gap: 20px;
     row-gap: 25px;
    justify-content: center;
-}
+} */
 
 .image{
     display: flex;
@@ -39,10 +39,10 @@
 }
 
 @media screen and (max-width: 1390px){
-    .card_list{
+    /* .card_list{
         display: grid;
         grid-template-columns: repeat(2, auto);
-    }
+    } */
     .image{
         height: 166px;      
     }
@@ -51,10 +51,10 @@
     }
 }
 @media screen and (max-width: 675px){
-    .card_list{
+    /* .card_list{
         display: grid;
         grid-template-columns: repeat(1, 320px);
-    }
+    } */
     .image{
         height: 94px;     
     }

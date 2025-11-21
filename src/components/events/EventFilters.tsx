@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { DateRange, RangeKeyDict } from "react-date-range";
+import { DateRange } from "react-date-range";
 import { Range } from "react-range";
 import type { Event } from "@/types";
 

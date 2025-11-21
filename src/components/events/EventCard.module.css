@@ -148,7 +148,7 @@
     align-items: center;
 }
 
-@media screen and (max-width: 910px){
+@media screen and (max-width: 986px){
     .card{
         width: 320px;
         min-height: 481px;

@@ -17,7 +17,7 @@ export default function EventsClient({ events }: Props) {
 
       <EventFilters events={events} onFiltered={setFilteredEvents} />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6 w-full max-w-6xl">
+      <div className="flex flex-wrap gap-6 mt-6 m-auto justify-center">
         {filteredEvents.map((ev) => (
           <EventCard key={ev.id} event={ev} />
         ))}

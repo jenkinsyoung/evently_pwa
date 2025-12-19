@@ -15,7 +15,7 @@ export default function EventsClient({ events }: Props) {
   return (
     <div className="p-6 w-full flex flex-col items-center">
 
-      <EventFilters events={events} onFiltered={setFilteredEvents} />
+      {/* <EventFilters events={events} onFiltered={setFilteredEvents} /> */}
 
       <div className="flex flex-wrap gap-6 mt-6 m-auto justify-center">
         {filteredEvents.map((ev) => (

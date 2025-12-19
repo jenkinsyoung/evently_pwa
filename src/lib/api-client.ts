@@ -18,7 +18,7 @@ export async function apiFetch<T>(
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
         ...options.headers,
       },
-      cache: "no-store",
+      cache: "force-cache",
     });
 
     if (!res.ok) {

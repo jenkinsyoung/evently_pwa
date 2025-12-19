@@ -6,8 +6,9 @@ export function middleware(request: NextRequest) {
 
   const path = request.nextUrl.pathname;
 
-  const protectedRoutes = ["/my-events", "/account"]
-  //"/account", "/friends", "/messages"
+  const protectedRoutes = ["/my-events",
+  "/account"]
+  //, "/friends",  "/messages"
   const isProtected = protectedRoutes.some((route) =>
     path.startsWith(route)
   );

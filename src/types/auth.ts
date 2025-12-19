@@ -26,3 +26,11 @@ export interface LoginCredentials {
   email: string;
   password: string;
 }
+
+export interface Session {
+  user: {
+    id: string
+    email: string
+    name: string
+  }
+}

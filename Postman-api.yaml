@@ -1,0 +1,2441 @@
+openapi: '3.0.3'
+info:
+  title: Kukuda API
+  version: '1.0'
+tags:
+  - name: auth
+    description: Authorization
+  - name: user
+    description: User CRUD
+  - name: subscription
+    description: Subscription CRUD
+  - name: event
+    description: Event CRUD
+  - name: review
+    description: Review CRUD
+  - name: category
+    description: Category CRUD
+  - name: eventDetails
+    description: More info about event
+
+paths:
+  /auth/login:
+    post:
+      tags:
+        - auth
+      summary: Login user
+      description: Вход в аккаунт
+      operationId: LoginUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginUser"
+      responses:
+        "200":
+          description: Successfully logged in
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TokenResponse"
+        "400":
+          description: Bad User Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBadRequest'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /auth/register:
+    post:
+      tags:
+        - auth
+      summary: Register a new user
+      description: Регистрация пользователя
+      operationId: CreateUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateUser"
+      responses:
+        "200":
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          description: Bad User Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBadRequest'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  
+  /auth/refresh:
+    post:
+      tags:
+        - auth
+      summary: Refresh tokens
+      description: Обновление токенов
+      operationId: RefreshTokens
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshToken'
+      responses:
+        "200":
+          description: New access token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        "400":
+          description: Bad Token Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBadRequest'
+        "401":
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+
+  /user/filter:
+    post:
+      tags:
+        - user
+      summary: Filter users with criteria
+      description: Получение списка пользователей с фильтрами
+      operationId: FilterUsers
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FilterUsersRequest"
+      responses:
+        "200":
+          description: Filtered list of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserInfo"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBadRequest'
+        "401":
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        "403":
+          description: Access Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorForbidden'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  
+  /user/{id}:
+    get:
+      tags:
+        - user
+      summary: Get user by ID
+      description: Получение целого пользователя по ID
+      operationId: GetUserById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: User found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          description: Bad User Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBadRequest'
+        "401":
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorNotFound'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+    delete:
+      tags:
+        - user
+      summary: Delete user
+      description: Удаление пользователя по ID
+      operationId: DeleteUser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: User deleted successfully
+        "400":
+          description: Bad User Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBadRequest'
+        
+        "401":
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        "403":
+          description: Access Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorForbidden'
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorNotFound'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /user/{id}/info:
+    get:
+      tags:
+        - user
+      summary: Get user info by ID
+      description: Получение информации о пользователе по ID
+      operationId: GetUserInfoById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: User found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserInfo"
+        "400":
+          description: Bad User Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBadRequest'
+        "401":
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorNotFound'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /user/{id}/update-user:
+    post:
+      tags:
+        - user
+      summary: Update user
+      description: Обновление пользователя по ID
+      operationId: UpdateUser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateUser"
+      responses:
+        "200":
+          description: User updated
+        "400":
+          description: Bad User Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBadRequest'
+        
+        "401":
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        "403":
+          description: Access Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorForbidden'
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorNotFound'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /user/{id}/update-email:
+    post:
+      tags:
+        - user
+      summary: Update user email
+      description: Обновление email пользователя по ID
+      operationId: UpdateUserEmail
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateUserEmail"
+      responses:
+        "200":
+          description: User email updated
+        "400":
+          description: Bad User Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBadRequest'
+
+        "401":
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        "403":
+          description: Access Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorForbidden'
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorNotFound'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /user/{id}/update-password:
+    post:
+      tags:
+        - user
+      summary: Update user password
+      description: Обновление пароля пользователя по ID
+      operationId: UpdateUserPassword
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateUserPassword"
+      responses:
+        "200":
+          description: User password updated
+        "400":
+          description: Bad User Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBadRequest'
+
+        "401":
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        "403":
+          description: Access Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorForbidden'
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorNotFound'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /user/{id}/subscriptions:
+    get:
+      tags:
+        - subscription
+      summary: Get subscriptions of a user
+      description: Список подписок
+      operationId: GetListOfSubscriptions
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: List of followed users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserInfo"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBadRequest'
+        "401":
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorNotFound'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /user/{id}/avatar:
+    get:
+      tags:
+        - user
+      summary: Get Profile picture for User
+      description: Получить URL для скачивания аватарки для пользователя
+      operationId: GetProfilePictureForUser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/URLForUserProfilePicture'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBadRequest'
+        "401":
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        "403":
+          description: Access Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorForbidden'
+        "404":
+          description: Event not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorNotFound'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+    post:
+      tags:
+        - user
+      summary: Upload Profile Picture for User
+      description: Получить URL для загрузки аватарки для пользователя в S3
+      operationId: UploadProfilePictureForUser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/URLForUserProfilePicture'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBadRequest'
+        "401":
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        "403":
+          description: Access Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorForbidden'
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorNotFound'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+
+  /user/{id}/followers:
+    get:
+      tags:
+        - subscription
+      summary: Get list of followers
+      description: Список подписчиков
+      operationId: GetListOfFollowers
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: List of followers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserInfo"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBadRequest'
+        "401":
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorNotFound'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  
+  /user/{userId}/follow/{subscribedToId}:
+    post:
+      tags:
+        - subscription
+      summary: Subscribe one user to another
+      description: Подписка на пользователя
+      operationId: SubscribeToUser
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: subscribedToId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+
+      responses:
+        "200":
+          description: Subscription created
+        "400":
+          description: Bad Subscription Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBadRequest'
+        "401":
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  
+  /user/{userId}/unfollow/{subscribedToId}:
+    delete:
+      tags:
+        - subscription
+      summary: Unsubscribe
+      description: Отписать пользователя
+      operationId: UnsubscribeUser
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: subscribedToId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Unsubscribed successfully
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBadRequest'
+        "401":
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /event:
+    get:
+      tags:
+        - event
+      summary: Get list of events
+      description: Получить список всех мероприятий
+      operationId: GetAllEvents
+      responses:
+        "200":
+          description: All events
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Event"
+        "401":
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+    post:
+      tags:
+        - event
+      summary: Create new event
+      description: Создать новое мероприятие
+      operationId: CreateEvent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateEvent"
+      responses:
+        "200":
+          description: Event created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Event"
+        "400":
+          description: Bad Event Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBadRequest'
+        "401":
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /event/{id}:
+    get:
+      tags:
+        - event
+      summary: Get event by ID
+      description: Получить мероприятие по ID
+      operationId: GetEventByID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Event found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Event"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBadRequest'
+        "401":
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        "404":
+          description: Event not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorNotFound'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+    delete:
+      tags:
+        - event
+      summary: Delete event
+      description: Удалить мероприятие
+      operationId: DeleteEvent
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Event deleted
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBadRequest'
+        "401":
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        "403":
+          description: Access Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorForbidden'
+        "404":
+          description: Event not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorNotFound'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /event/{id}/images:
+    get:
+      tags:
+        - event
+      summary: Get Images for Event
+      description: Получить URL для скачивания картинок для мероприятия
+      operationId: GetImagesForEvent
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/URLsForImages'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBadRequest'
+        "401":
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        "403":
+          description: Access Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorForbidden'
+        "404":
+          description: Event not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorNotFound'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+    post:
+      tags:
+        - event
+      summary: Upload Images for Event
+      description: Получить URL для загрузки картинок для мероприятия в S3
+      operationId: UploadImagesForEvent
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UploadImages"
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/URLsForImages'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBadRequest'
+        "401":
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        "403":
+          description: Access Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorForbidden'
+        "404":
+          description: Event not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorNotFound'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /event/update-event/{id}:
+    post:
+      tags:
+        - event
+      summary: Update event
+      description: Обновить информацию о мероприятии
+      operationId: UpdateEvent
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateEvent"
+      responses:
+        "200":
+          description: Event updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Event"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBadRequest'
+        "401":
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        "403":
+          description: Access Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorForbidden'
+        "404":
+          description: Event not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorNotFound'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /category:
+    get:
+      tags:
+        - category
+      summary: Get list of categories
+      description: Получить список всех категорий
+      operationId: GetAllCategories
+      responses:
+        "200":
+          description: List of categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Category"
+        "401":
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    post:
+      tags:
+        - category
+      summary: Create new category
+      description: Создать новую категорию мероприятий
+      operationId: CreateCategory
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCategory"
+      responses:
+        "200":
+          description: Category created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Category"
+        "400":
+          description: Bad Category Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBadRequest'
+        "401":
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        "403":
+          description: Access Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorForbidden'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  
+  /category/{id}:
+    get:
+      tags:
+        - category
+      summary: Get category by ID
+      operationId: GetCategoryByID
+      description: Возвращает категорию по ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Category found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBadRequest'
+        "401":
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        "404":
+          description: Category not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorNotFound'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    delete:
+      tags:
+        - category
+      summary: Delete category by ID
+      operationId: DeleteCategory
+      description: Удаляет категорию по ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Category deleted
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBadRequest'
+        "401":
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        "403":
+          description: Access Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorForbidden'
+        "404":
+          description: Category not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorNotFound'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /review/{id}:
+    get:
+      tags:
+        - review
+      summary: Get review by ID
+      description: Получить отзыв по ID
+      operationId: GetReviewByID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Review found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Review"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBadRequest'
+        "401":
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        "404":
+          description: Review not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorNotFound'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    put:
+      tags:
+        - review
+      summary: Update review to event
+      description: Обновить отзыв к мероприятию
+      operationId: UpdateReview
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateReview"
+      responses:
+        "200":
+          description: Review updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Review"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBadRequest'
+        "401":
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        "403":
+          description: Access Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorForbidden'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    delete:
+      tags:
+        - review
+      summary: Delete review by ID
+      description: Удалить отзыв по ID
+      operationId: DeleteReviewByID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Review deleted
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBadRequest'
+        "401":
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        "403":
+          description: Access Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorForbidden'
+        "404":
+          description: Review not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorNotFound'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  
+
+  /event/{id}/reviews:
+    get:
+      tags:
+        - eventDetails
+      summary: Get reviews for event
+      description: Получить все отзывы для конкретного мероприятия
+      operationId: GetEventReviews
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Список отзывов для мероприятия
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Review"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBadRequest'
+        "401":
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        "404":
+          description: Event not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorNotFound'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    post:
+      tags:
+        - review
+      summary: Add review to event
+      description: Добавить отзыв к мероприятию
+      operationId: CreateReview
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateReview"
+      responses:
+        "200":
+          description: Review created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Review"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBadRequest'
+        "401":
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+
+
+  /event/{id}/attendance:
+    post:
+      tags:
+        - eventDetails
+      summary: Register to event
+      description: Зарегистрироваться на мероприятие
+      operationId: RegisterToEvent
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Successful registration
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBadRequest'
+        "401":
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        "404":
+          description: Event not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorNotFound'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+    delete:
+      tags:
+        - eventDetails
+      summary: Cancel event attendance
+      description: Отменить участие в мероприятии
+      operationId: CancelEventAttendance
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Registration successfully cancelled
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBadRequest'
+        "401":
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        "403":
+          description: Access Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorForbidden'
+        "404":
+          description: Event not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorNotFound'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  
+
+  /event/{id}/attendees:
+    get:
+      tags:
+        - eventDetails
+      summary: Get all event attendees
+      description: Возвращает всех участников
+      operationId: GetEventAttendees
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBadRequest'
+        "401":
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        "404":
+          description: Event not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorNotFound'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /geo/events:
+    get:
+      tags:
+        - geo
+      summary: Get events on map
+      description: Получаем список мероприятий с координатами
+      operationId: GetEventsOnMap
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Location'
+        "401":
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /geo/user/{userId}/location:
+    post:
+      tags:
+        - geo
+      summary: Update user location
+      description: Отправляем текущую позицию пользователя
+      operationId: UpdateUserLocation
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLocation'
+      responses:
+        "200":
+          description: User location updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBadRequest'
+        "401":
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+    get:
+      tags:
+        - geo
+      summary: Get user location
+      description: Получить последнюю позицию пользователя
+      operationId: GetUserLocation
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserLocation'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBadRequest'
+        "401":
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorNotFound'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /geo/route:
+    post:
+      tags:
+        - geo
+      summary: Build route
+      description: Построить маршрут между двумя точками
+      operationId: BuildRoute
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RouteRequest'
+      responses:
+        "200":
+          description: Built route
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Route'
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorBadRequest'
+        "401":
+          description: Unauthorized Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorUnauthorized'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+
+components:
+  schemas:
+    LoginUser:
+      type: object
+      properties:
+        login:
+          type: string
+        password:
+          type: string
+          format: password
+      required:
+        - login
+        - password
+
+    TokenResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+          description: JWT access token
+        refreshToken:
+          type: string
+          description: JWT refresh token
+      required:
+        - accessToken
+        - refreshToken
+
+    RefreshToken:
+      type: object
+      properties:
+        refreshToken:
+          type: string
+      required:
+        - refreshToken
+
+
+    Category:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+      required:
+        - id
+        - name
+        - description
+
+    CreateCategory:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+      required:
+        - name
+        - description
+
+
+    ErrorBadRequest:
+      description: Bad Request
+      type: object
+      properties:
+        error:
+          type: string
+          example: Invalid request
+      required:
+        - error
+
+    ErrorUnauthorized:
+      description: Unauthorized
+      type: object
+      properties:
+        error:
+          type: string
+          example: Unauthorized
+      required:
+        - error
+
+
+    ErrorForbidden:
+      description: Forbidden
+      type: object
+      properties:
+        error:
+          type: string
+          example: Forbidden
+      required:
+        - error
+
+
+    ErrorNotFound:
+      description: Not Found
+      type: object
+      properties:
+        error:
+          type: string
+          example: Not Found
+      required:
+        - error
+
+
+    InternalServerError:
+      description: Internal Server Error
+      type: object
+      properties:
+        error:
+          type: string
+          example: Internal Server Error
+      required:
+        - error
+
+
+
+    Event:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        ageRestriction:
+          $ref: '#/components/schemas/EventAgeRestriction'
+        startDate:
+          type: string
+          format: date-time
+          description: datetime в формате RFC3339
+        endDate:
+          type: string
+          format: date-time
+          description: datetime в формате RFC3339
+        creatorId:
+          type: string
+          format: uuid
+        capacity:
+          type: integer
+        status:
+          $ref: '#/components/schemas/EventStatus'
+        createdAt:
+          type: string
+          format: date-time
+          description: datetime в формате RFC3339
+        updatedAt:
+          type: string
+          format: date-time
+          description: datetime в формате RFC3339
+        categories:
+          type: array
+          description: Массив категорий, к которым относится мероприятие
+          items:
+            $ref: '#/components/schemas/Category'
+      required:
+        - id
+        - title
+        - description
+        - ageRestriction
+        - startDate
+        - endDate
+        - creatorId
+        - status
+        - createdAt
+        - updatedAt
+
+    EventAgeRestriction:
+      type: integer
+      enum:
+        - 0
+        - 6
+        - 12
+        - 16
+        - 18
+      default: 0
+
+    EventStatus:
+      type: string
+      enum:
+        - pending
+        - approved
+        - finished
+        - canceled
+      default: pending
+
+    CreateEvent:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        ageRestriction:
+          $ref: '#/components/schemas/EventAgeRestriction'
+        startDate:
+          type: string
+          format: date-time
+          description: datetime в формате RFC3339
+        endDate:
+          type: string
+          format: date-time
+          description: datetime в формате RFC3339
+        capacity:
+          type: integer
+        categories:
+          type: array
+          description: Массив ID категорий, к которым относится мероприятие
+          items:
+            type: string
+            format: uuid
+      required:
+        - title
+        - description
+        - startDate
+        - endDate
+
+    UpdateEvent:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        ageRestriction:
+          $ref: '#/components/schemas/EventAgeRestriction'
+        startDate:
+          type: string
+          format: date-time
+          description: datetime в формате RFC3339
+        endDate:
+          type: string
+          format: date-time
+          description: datetime в формате RFC3339
+        capacity:
+          type: integer
+        status:
+          $ref: '#/components/schemas/EventStatus'
+        categories:
+          type: array
+          description: Массив ID категорий, к которым относится мероприятие
+          items:
+            type: string
+            format: uuid
+
+    Review:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        rating:
+          type: integer
+          description: от 2 до 10 (оценки от 1 до 5 но в удвоенном формате)
+        comment:
+          type: string
+        userId:
+          type: string
+          format: uuid
+        createdAt:
+          type: string
+          format: date-time
+          description: datetime в формате RFC3339
+        updatedAt:
+          type: string
+          format: date-time
+          description: datetime в формате RFC3339
+      required:
+        - id
+        - rating
+        - comment
+        - userId
+        - createdAt
+        - updatedAt
+
+    CreateReview:
+      type: object
+      properties:
+        rating:
+          type: integer
+        comment:
+          type: string
+        userId:
+          type: string
+          format: uuid
+        eventId:
+          type: string
+          format: uuid
+      required:
+        - rating
+        - comment
+        - userId
+        - eventId
+
+    UpdateReview:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        rating:
+          type: integer
+        comment:
+          type: string
+      required:
+        - id
+        - rating
+        - comment
+
+
+    Subscription:
+      type: object
+      properties:
+        subscriberId:
+          type: string
+          format: uuid
+        subscribedToId:
+          type: string
+          format: uuid
+        createdAt:
+          type: string
+          format: date-time
+          description: datetime в формате RFC3339
+      required:
+        - subscriberId
+        - subscribedToId
+
+    CreateSubscription:
+      type: object
+      properties:
+        subscriberId:
+          type: string
+          format: uuid
+        subscribedToId:
+          type: string
+          format: uuid
+      required:
+        - subscriberId
+        - subscribedToId
+
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        login:
+          type: string
+        passwordHashed:
+          type: string
+        phone:
+          type: string
+        lastName:
+          type: string
+        name:
+          type: string
+        gender:
+          $ref: '#/components/schemas/UserGender'
+        birthDate:
+          type: string
+          format: date-time
+          description: datetime в формате RFC3339
+        role:
+          $ref: '#/components/schemas/UserRole'
+        createdAt:
+          type: string
+          format: date-time
+          description: datetime в формате RFC3339
+        updatedAt:
+          type: string
+          format: date-time
+          description: datetime в формате RFC3339
+        isDeleted:
+          type: boolean
+          default: false
+        isActive:
+          type: boolean
+      required:
+        - id
+        - login
+        - email
+        - passwordHashed
+        - phone
+        - name
+        - role
+        - createdAt
+        - updatedAt
+        - isActive
+
+    CreateUser:
+      type: object
+      properties:
+        login:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+        phone:
+          type: string
+        lastName:
+          type: string
+        birthDate:
+          type: string
+          format: date-time
+          description: datetime в формате RFC3339
+        name:
+          type: string
+        gender:
+          $ref: '#/components/schemas/UserGender'
+        role:
+          $ref: '#/components/schemas/UserRole'
+      required:
+        - login
+        - email
+        - password
+        - phone
+        - name
+        - gender
+        - role
+
+    UpdateUser:
+      type: object
+      properties:
+        login:
+          type: string
+        phone:
+          type: string
+        lastName:
+          type: string
+        name:
+          type: string
+        birthDate:
+          type: string
+          format: date-time
+          description: datetime в формате RFC3339
+        gender:
+          $ref: '#/components/schemas/UserGender'
+        isActive:
+          type: boolean
+
+    UpdateUserEmail:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+      required:
+        - email
+
+    UpdateUserPassword:
+      type: object
+      properties:
+        oldPassword:
+          type: string
+          format: password
+        newPassword:
+          type: string
+          format: password
+      required:
+        - oldPassword
+        - newPassword
+
+
+    UserInfo:
+      type: object
+      properties:
+        login:
+          type: string
+        phone:
+          type: string
+        lastName:
+          type: string
+        name:
+          type: string
+        birthDate:
+          type: string
+          format: date-time
+          description: datetime в формате RFC3339
+        gender:
+          $ref: '#/components/schemas/UserGender'
+        role:
+          $ref: '#/components/schemas/UserRole'
+        isActive:
+          type: boolean
+
+    FilterUsersRequest:
+      type: object
+      properties:
+        isActive:
+          type: boolean
+        role:
+          $ref: '#/components/schemas/UserRole'
+        gender:
+          $ref: '#/components/schemas/UserGender'
+        isDeleted:
+          type: boolean
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 1000
+          default: 100
+        offset:
+          type: integer
+          minimum: 0
+          default: 0
+
+    UserRole:
+      type: string
+      default:
+        user
+      enum:
+        - moderator
+        - user
+        - admin
+
+    UserGender:
+      type: string
+      enum:
+        - male
+        - female
+
+    URLForUserProfilePicture:
+      type: object
+      properties:
+        url:
+          type: string
+          format: url
+      required:
+        - url
+
+    URLsForImages:
+      type: object
+      properties:
+        urls:
+          type: array
+          items:
+            type: string
+            format: url
+          description: Ссылки на скачивание картинок
+
+
+    UploadImages:
+      type: object
+      properties:
+        imagesCount:
+          type: integer
+          description: Сколько ссылок нужно для загрузки, имена дает сам бэк
+
+    Location:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        point:
+          $ref: '#/components/schemas/GeoPoint'
+        address:
+          type: string
+          description: Адрес
+      required:
+        - id
+        - point
+        - address
+
+    UserLocation:
+      type: object
+      properties:
+        userId:
+          type: string
+          format: uuid
+        point:
+          $ref: '#/components/schemas/GeoPoint'
+        timestamp:
+          type: string
+          format: date-time
+      required:
+        - userId
+        - point
+        - timestamp
+
+    RouteBase:
+      type: object
+      properties:
+        userId:
+          type: string 
+          format: uuid
+        originPoint:
+          $ref: '#/components/schemas/GeoPoint'
+        destinationPoint:
+          $ref: '#/components/schemas/GeoPoint'
+
+    RouteRequest:
+      allOf:
+        - $ref: '#/components/schemas/RouteBase'
+
+    Route:
+      allOf:
+        - $ref: '#/components/schemas/RouteBase'
+        - type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+            path:
+              type: array
+              items:
+                $ref: '#/components/schemas/GeoPoint'
+            distanceM:
+              type: integer
+              description: Длина маршрута в метрах
+            durationSec:
+              type: integer
+              description: Длительность маршрута в секундах
+            createdAt:
+              type: string
+              format: date-time
+          required:
+            - id
+            - userId
+            - originPoint
+            - destinationPoint
+            - path
+            - distanceM
+            - durationSec
+            - createdAt
+
+    GeoPoint:
+      type: object
+      properties:
+        lat:
+          type: number
+          format: double
+          description: Широта
+        lng:
+          type: number
+          format: double
+          description: Долгота
+      required:
+        - lat
+        - lng

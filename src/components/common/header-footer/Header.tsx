@@ -34,7 +34,7 @@ const Header = () => {
         <div className="flex justify-between items-center h-16">
           {/* Логотип */}
           <Link href="/" className="flex">
-            <div className="text-2xl font-bold text-[#A312ED]">КуКуда</div>
+            <div className="text-2xl font-bold text-[#A312ED]">Evently</div>
           </Link>
 
           {/* Десктопная навигация */}

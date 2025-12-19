@@ -1,7 +1,7 @@
 import styles from '@/styles/pages/EventsPage.module.css'
 import { getEvents } from '@/lib/api/event-api'
 import EventsClient from "@/components/events/EventsClient"
-
+import { sampleEvents } from '@/types'
 export default async function EventsPage() {
   const result = await getEvents();
 
@@ -26,7 +26,8 @@ export default async function EventsPage() {
       </div>
 
       <div className={styles.card_list}>
-        <EventsClient events={result.data} />;
+        {/* <EventsClient events={result.data} />; */}
+        <EventsClient events={sampleEvents} />
       </div>
     </div>
   );

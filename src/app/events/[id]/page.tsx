@@ -1,30 +1,32 @@
-"use client"
 import React from 'react'
-import { event } from '@/types';
-import styles from '@/styles/pages/EventIdPage.module.css'
-import Link from 'next/link';
-import Button from '@/components/common/btn/Button';
+import { sampleEvents } from '@/types';
+import { sampleReviews } from '@/types';
+
+import { getEventByID } from '@/lib/api/event-api'
+import { EventHeader } from '@/components/events/EventHeader'
+import { ReviewsSection } from '@/components/events/ReviewSection'
+import { getSession } from '@/lib//api/auth'
 
 
-function EventIdPage() {
-  return (
-    <div className={styles.container}>
-      <div className={styles.nav_container}>
-        <Link href='/events'>События</Link> 
-        <p>/</p>
-        <div className={styles.title_nav}>{event.title}</div>
-      </div>
-
-      <div className={styles.title}>{event.title}</div>
-      <div className={styles.image} style={{backgroundImage: `url(${event.image})`}}/>
-
-      <div className={styles.desc_act}>
-        <h3>Описание</h3>
-        <Button name='Я иду' func_type='submit' style='purple'/>
-        <Button name='Поделиться' func_type='submit' style='gray' />
-      </div>
-    </div>
-  )
+interface PageProps {
+params: { id: string }
 }
 
-export default EventIdPage
+
+export default async function EventPage({ params }: PageProps) {
+const session = await getSession()
+// const event = await getEventById(params.id)
+// const reviews = await getReviews(params.id)
+const reviews = sampleReviews
+const event = sampleEvents[0]
+return (
+<main className="container mx-auto px-6 py-8">
+<EventHeader event={event} isAuth={!!session} />
+<ReviewsSection
+eventId={event.id}
+reviews={reviews}
+isAuth={!!session}
+/>
+</main>
+)
+}

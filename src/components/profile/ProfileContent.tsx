@@ -1,21 +1,14 @@
-"use client"
-
-import Button from '@/components/common/btn/Button'
-import React from 'react'
 import styles from '@/styles/pages/ProfilePage.module.css'
-import {user} from '@/types'
+import {User} from '@/types'
 import { useState, useEffect } from 'react'
+import EventCard from '@/components/events/EventCard'
 import { Event } from '@/types'
-function AccountPage() {
-  return (
-    <ProfileContent />
-  )
+import Button from '@/components/common/btn/Button'
+interface Props {
+  user: User
 }
 
-export default AccountPage
-
-
-function ProfileContent(){
+export function ProfileContent({ user }: Props){
     return(
         <div className={styles.content}>
             <div className={styles.about}>
@@ -34,8 +27,8 @@ function ProfileContent(){
                     </div>
                 </div>
                 <div className={styles.act_btns}>
-                    <Button name = 'Создать событие' func_type = 'create_event' style='gray'/>
-                    <Button name = 'Редактировать профиль' func_type = 'edit_profile'/>
+                    <Button name = 'Подписаться' func_type = 'create_event' style='gray'/>
+                    <Button name = 'Отправить сообщение' func_type = 'edit_profile'/>
                 </div>
                 <div className={styles.about_info}>
                     {user.bio} 
@@ -97,18 +90,9 @@ function EventNavigation() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {events.map((event) => (
-            <EventCardInProfile key={event.id} />
+            <EventCard event={event} key={event.id} />
             ))}
             </div>
         </div>
     );
-}
-
-function EventCardInProfile(){
-    return(
-        <div>
-            <div />
-
-        </div>
-    )
 }

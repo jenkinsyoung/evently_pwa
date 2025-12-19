@@ -35,7 +35,7 @@ export default function EventCard({ event }: EventCardProps) {
           {event.title}
         </div>
         <div className={styles.date_info}>
-{/* TO DO FUNCTION */} ВРЕМЯ СДЕЛАТЬ ФУНКЦИЮ
+{/* TO DO FUNCTION */} 4 января СБ 19:00
         </div>
         <div className={styles.location_info}>
             {event.location}
@@ -51,7 +51,7 @@ export default function EventCard({ event }: EventCardProps) {
           <div className={styles.capacity_block}>
             <div className={styles.people}/>
             <div className={styles.num_people}>
-              1000/10 TD
+              100/1000
             </div>
           </div>
           <div className={styles.price_block}>

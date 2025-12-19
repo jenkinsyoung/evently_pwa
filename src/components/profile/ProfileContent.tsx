@@ -1,3 +1,5 @@
+"use client"
+
 import styles from '@/styles/pages/ProfilePage.module.css'
 import {User} from '@/types'
 import { useState, useEffect } from 'react'

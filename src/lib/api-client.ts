@@ -1,31 +1,27 @@
-import { cookies } from "next/headers";
+// lib/api-client.ts
 import { ApiResult, ApiError } from "@/types/api";
 
-const baseUrl = process.env.API_URL!;
+const baseUrl = process.env.NEXT_PUBLIC_API_URL!; // публичная переменная!
 
 export async function apiFetch<T>(
   url: string,
-  options: RequestInit = {}
+  options: RequestInit = {},
+  token?: string
 ): Promise<ApiResult<T>> {
-  const cookieStore = cookies();
-  const token = (await cookieStore).get("token")?.value;
-
   try {
     const res = await fetch(`${baseUrl}${url}`, {
       ...options,
+      credentials: "include",
       headers: {
         "Content-Type": "application/json",
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
         ...options.headers,
       },
-      cache: "force-cache",
+      cache: "no-cache",
     });
 
     if (!res.ok) {
-      const error: ApiError = {
-        status: res.status,
-        message: res.statusText,
-      };
+      const error: ApiError = { status: res.status, message: res.statusText };
       return { ok: false, error };
     }
 

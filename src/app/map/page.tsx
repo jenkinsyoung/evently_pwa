@@ -1,9 +1,12 @@
-import React from 'react'
+// app/map/page.tsx
+"use client"
+import dynamic from "next/dynamic";
 
-function MapPage() {
-  return (
-    <div>MapPage</div>
-  )
+const MapPageClient = dynamic(
+  () => import("@/components/map/MapPageClient"),
+  { ssr: false }
+);
+
+export default function MapPage() {
+  return <MapPageClient />;
 }
-
-export default MapPage

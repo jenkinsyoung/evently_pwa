@@ -1,5 +1,6 @@
 import Header from '@/components/common/header-footer/Header'
 import Footer from '@/components/common/header-footer/Footer'
+import "leaflet/dist/leaflet.css";
 import './globals.css'
 import { ReactNode } from 'react'
 import { Inter, Manrope } from 'next/font/google'

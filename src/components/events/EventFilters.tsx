@@ -1,14 +1,19 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { DateRange } from "react-date-range";
 import { Range } from "react-range";
-import type { Event } from "@/types";
+import { format } from "date-fns";
+import 'react-date-range/dist/styles.css';
+import 'react-date-range/dist/theme/default.css';
+import { ru } from "date-fns/locale";
+import type { Category, Event } from "@/types";
+import styles from './DatePicker.module.css';
 
 interface Props {
   events: Event[];
-  onFiltered: (filtered: Event[]) => void; // реактивная передача карточек вверх
+  onFiltered: (filtered: Event[]) => void;
 }
 
 export default function EventFilters({ events, onFiltered }: Props) {
@@ -18,28 +23,47 @@ export default function EventFilters({ events, onFiltered }: Props) {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [search, setSearch] = useState("");
 
-  // дата
-  const [date, setDate] = useState<{ startDate: Date; endDate: Date } | null>(
-    null
-  );
+  // дата - всегда есть начальная и конечная
+  const today = new Date();
+  const [date, setDate] = useState<{ startDate: Date; endDate: Date }>({
+    startDate: today,
+    endDate: today,
+  });
+  const [isDateActive, setIsDateActive] = useState(false);
 
   // цена
   const priceMin = 0;
-  const priceMax = Math.max(...events.map((e) => e.price));
-  const [price, setPrice] = useState<[number, number]>([
-    priceMin,
-    priceMax,
-  ]);
+  const priceMax = useMemo(() => {
+    if (!events.length) return priceMin + 1;
+    const max = Math.max(...events.map((e) => e.price ?? 0));
+    return Number.isFinite(max) ? Math.max(max, priceMin + 1) : priceMin + 1;
+  }, [events]);
+
+  const [price, setPrice] = useState<[number, number]>([priceMin, priceMax]);
+
+  useEffect(() => {
+    setPrice([priceMin, priceMax]);
+  }, [priceMin, priceMax]);
 
   // категории
-  const allCategories = Array.from(new Set(events.flatMap((e) => e.category)));
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const allCategories = useMemo(() => {
+    const map = new Map<string, Category>();
+    for (const ev of events) {
+      for (const c of ev.categories) {
+        if (!map.has(c.id)) map.set(c.id, c);
+      }
+    }
+    return Array.from(map.values());
+  }, [events]);
+
+  const [selectedCategories, setSelectedCategories] = useState<Category[]>([]);
   const [catSearch, setCatSearch] = useState("");
 
   // сброс всех фильтров
   const resetAll = () => {
     setSearch("");
-    setDate(null);
+    setDate({ startDate: today, endDate: today });
+    setIsDateActive(false);
     setPrice([priceMin, priceMax]);
     setSelectedCategories([]);
     setIsSearchOpen(false);
@@ -51,35 +75,33 @@ export default function EventFilters({ events, onFiltered }: Props) {
     return events.filter((ev) => {
       const text = search.toLowerCase();
       const matchSearch =
-        ev.title.toLowerCase().includes(text) ||
-        ev.description.toLowerCase().includes(text) ||
-        ev.location.toLowerCase().includes(text) ||
-        ev.category.some((c) => c.toLowerCase().includes(text)) ||
-        `${ev.organizer.firstName} ${ev.organizer.lastName}`
-          .toLowerCase()
-          .includes(text);
+        (ev.title ?? '').toLowerCase().includes(text) ||
+        (ev.description ?? '').toLowerCase().includes(text) ||
+        (ev.location ?? '').toLowerCase().includes(text) ||
+        ev.categories.some((c) => c.name.toLowerCase().includes(text));
 
       if (!matchSearch) return false;
 
-      if (date) {
-        const d = new Date(ev.date);
+      if (isDateActive) {
+        const d = new Date(ev.startDate);
         if (d < date.startDate || d > date.endDate) return false;
       }
 
       if (ev.price < price[0] || ev.price > price[1]) return false;
 
       if (selectedCategories.length > 0) {
-        if (!ev.category.some((c) => selectedCategories.includes(c))) {
+        if (!ev.categories.some((c) => selectedCategories.includes(c))) {
           return false;
         }
       }
 
       return true;
     });
-  }, [events, search, date, price, selectedCategories]);
+  }, [events, search, isDateActive, date, price, selectedCategories]);
 
-  // отправить карточки наружу
-  useMemo(() => onFiltered(filtered), [filtered]);
+  useEffect(() => {
+    onFiltered(filtered);
+  }, [filtered, onFiltered]);
 
   // UI-кнопки
   const filterButtons = [
@@ -90,22 +112,21 @@ export default function EventFilters({ events, onFiltered }: Props) {
   ];
 
   const isSearchActive = search.trim().length > 0;
+  const isPriceActive = price[0] !== priceMin || price[1] !== priceMax;
+  const isCategoriesActive = selectedCategories.length > 0;
 
   return (
     <div className="flex flex-col items-center gap-4 w-full">
-
       {/* === КНОПКИ ФИЛЬТРОВ === */}
       <div className="flex gap-3 justify-center flex-wrap">
-
         {/* ВСЕ СОБЫТИЯ */}
         <button
           onClick={resetAll}
           className={`px-4 py-2 rounded-xl border font-medium transition ${
             !isSearchActive &&
-            !date &&
-            price[0] === priceMin &&
-            price[1] === priceMax &&
-            selectedCategories.length === 0
+            !isDateActive &&
+            !isPriceActive &&
+            !isCategoriesActive
               ? "bg-purple-600 text-white border-purple-600"
               : "bg-white text-gray-700 border-gray-300"
           }`}
@@ -115,26 +136,26 @@ export default function EventFilters({ events, onFiltered }: Props) {
 
         {filterButtons.map((btn) => {
           const active =
-            (btn.key === "date" && date) ||
-            (btn.key === "price" &&
-              (price[0] !== priceMin || price[1] !== priceMax)) ||
-            (btn.key === "categories" && selectedCategories.length > 0) ||
+            (btn.key === "date" && isDateActive) ||
+            (btn.key === "price" && isPriceActive) ||
+            (btn.key === "categories" && isCategoriesActive) ||
             btn.key === activeFilter;
 
           return (
-            <button
-              key={btn.key}
-              onClick={() =>
-                setActiveFilter(activeFilter === btn.key ? null : btn.key)
-              }
-              className={`px-4 py-2 rounded-xl border font-medium transition ${
-                active
-                  ? "bg-purple-600 text-white border-purple-600"
-                  : "bg-white text-gray-700 border-gray-300"
-              }`}
-            >
-              {btn.label}
-            </button>
+            <div key={btn.key} className="flex flex-col items-start">
+              <button
+                onClick={() =>
+                  setActiveFilter(activeFilter === btn.key ? null : btn.key)
+                }
+                className={`px-4 py-2 rounded-xl border font-medium transition ${
+                  active
+                    ? "bg-purple-600 text-white border-purple-600"
+                    : "bg-white text-gray-700 border-gray-300"
+                }`}
+              >
+                {btn.label}
+              </button>
+            </div>
           );
         })}
 
@@ -172,37 +193,69 @@ export default function EventFilters({ events, onFiltered }: Props) {
 
       {/* === ВЫПАДАЮЩИЕ ФИЛЬТРЫ === */}
       <AnimatePresence>
-        {/* дата */}
-        {activeFilter === "date" && (
+        {/* КАЛЕНДАРЬ */}
+        {activeFilter === 'date' && (
           <motion.div
-            initial={{ opacity: 0, y: -6 }}
+            initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -6 }}
-            className="bg-white border shadow-lg rounded-xl p-4"
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+            className={styles.calendarWrapper}
           >
+            {/* Выбранный период */}
+            <div className={styles.selectedInfo}>
+              <span className={styles.selectedLabel}>Выбранный период:</span>
+              <span className={styles.selectedValue}>
+                {format(date.startDate, "d MMMM yyyy", { locale: ru })} –{" "}
+                {format(date.endDate, "d MMMM yyyy", { locale: ru })}
+              </span>
+            </div>
+
             <DateRange
+              locale={ru}
               ranges={[
                 {
-                  startDate: date?.startDate ?? new Date(),
-                  endDate: date?.endDate ?? new Date(),
+                  startDate: date.startDate,
+                  endDate: date.endDate,
                   key: "selection",
                 },
               ]}
-              onChange={(r) => {
+              onChange={(ranges) => {
+                const next = ranges.selection;
                 setDate({
-                  startDate: r.selection.startDate!,
-                  endDate: r.selection.endDate!,
+                  startDate: next.startDate ?? today,
+                  endDate: next.endDate ?? next.startDate ?? today,
                 });
+                setIsDateActive(true);
               }}
               moveRangeOnFirstSelection={false}
+              rangeColors={['#7d618a']}
+              showDateDisplay={false}
+              weekdayDisplayFormat="EEEEEE"
+              monthDisplayFormat="LLLL yyyy"
             />
-            <button className="text-red-500 mt-2" onClick={() => setDate(null)}>
-              Сбросить дату
-            </button>
+
+            <div className={styles.actions}>
+              <button
+                className={styles.resetBtn}
+                onClick={() => {
+                  setDate({ startDate: today, endDate: today });
+                  setIsDateActive(false);
+                }}
+              >
+                Сбросить дату
+              </button>
+              <button
+                className={styles.applyBtn}
+                onClick={() => setActiveFilter(null)}
+              >
+                Готово
+              </button>
+            </div>
           </motion.div>
         )}
 
-        {/* цена */}
+        {/* ЦЕНА */}
         {activeFilter === "price" && (
           <motion.div
             initial={{ opacity: 0, y: -6 }}
@@ -226,13 +279,13 @@ export default function EventFilters({ events, onFiltered }: Props) {
               )}
             />
 
-            <div className="flex justify-between pt-2">
-              <span>{price[0]} ₽</span>
-              <span>{price[1]} ₽</span>
+            <div className="flex justify-between pt-2 text-sm font-medium">
+              <span>{price[0].toLocaleString()} ₽</span>
+              <span>{price[1].toLocaleString()} ₽</span>
             </div>
 
             <button
-              className="text-red-500 mt-2"
+              className="text-[#76048a] mt-2 text-sm hover:text-red-600"
               onClick={() => setPrice([priceMin, priceMax])}
             >
               Сбросить цену
@@ -240,7 +293,7 @@ export default function EventFilters({ events, onFiltered }: Props) {
           </motion.div>
         )}
 
-        {/* категории */}
+        {/* КАТЕГОРИИ */}
         {activeFilter === "categories" && (
           <motion.div
             initial={{ opacity: 0, y: -6 }}
@@ -252,16 +305,16 @@ export default function EventFilters({ events, onFiltered }: Props) {
               placeholder="Поиск категорий..."
               value={catSearch}
               onChange={(e) => setCatSearch(e.target.value)}
-              className="w-full px-2 py-1 mb-2 border rounded"
+              className="w-full px-3 py-2 mb-3 border border-gray-200 rounded-lg focus:outline-none focus:border-purple-300"
             />
 
             <div className="max-h-48 overflow-y-auto flex flex-col gap-2">
               {allCategories
                 .filter((c) =>
-                  c.toLowerCase().includes(catSearch.toLowerCase())
+                  c.name.toLowerCase().includes(catSearch.toLowerCase())
                 )
                 .map((c) => (
-                  <label key={c} className="flex items-center gap-2">
+                  <label key={c.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 cursor-pointer">
                     <input
                       type="checkbox"
                       checked={selectedCategories.includes(c)}
@@ -272,14 +325,15 @@ export default function EventFilters({ events, onFiltered }: Props) {
                             : [...prev, c]
                         )
                       }
+                      className="w-4 h-4 accent-[#76048a] text-purple-600 rounded focus:ring-purple-500"
                     />
-                    {c}
+                    <span className="text-sm">{c.name}</span>
                   </label>
                 ))}
             </div>
 
             <button
-              className="text-red-500 mt-2"
+              className="text-[#76048a] mt-3 text-sm hover:text-purple-600 font-medium"
               onClick={() => setSelectedCategories([])}
             >
               Сбросить категории

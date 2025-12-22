@@ -4,38 +4,41 @@ import { Event } from '@/types'
 import Link from 'next/link'
 import Image from 'next/image'
 import styles from './EventCard.module.css'
+import { formatEventDate } from '@/lib/utils/DateFormat'
 
 interface EventCardProps {
   event: Event
 }
 
 export default function EventCard({ event }: EventCardProps) {
+  const date = new Date(event.startDate);
   return (
-    <Link href={`/events/${event.id}`}>
+    
       <div className={styles.card}>
-        <div className={styles.creator_info}>
+        <Link href={`/account/${event.organizerID}`}><div className={styles.creator_info}>
           <div className={styles.avatar} />
           <div className={styles.user_name}>
-            {/* user name */}
-            {event.organizer.firstName} 
+            user name
+            {/* {event.organizer.firstName}  */}
           </div>
-        </div>
+        </div></Link>
+        <Link href={`/events/${event.id}`}>
         <div className={styles.categories_info}>
-          {event.category.map((tag, index) => <div key={tag} className={styles.category_info}>
+          {event.categories.map((c, index) => <div key={c.id} className={styles.category_info}>
             {index != 0 ? <div style={{marginRight: "11px"}}><Image
               src='/images/category.png'
               width={7}
               height={7}
               alt=""
             /></div> : <></>}   
-            <div className={styles.category}>{tag}</div>
+            <div className={styles.category}>{c.name}</div>
             </div>)}
         </div>
         <div className={styles.title}>
           {event.title}
         </div>
         <div className={styles.date_info}>
-{/* TO DO FUNCTION */} 4 января СБ 19:00
+        {formatEventDate(date)}
         </div>
         <div className={styles.location_info}>
             {event.location}
@@ -48,19 +51,20 @@ export default function EventCard({ event }: EventCardProps) {
               {event.rating}
             </div>
           </div>
-          <div className={styles.capacity_block}>
+          {/* <div className={styles.capacity_block}>
             <div className={styles.people}/>
             <div className={styles.num_people}>
-              100/1000
+              100/{event.capacity}
             </div>
-          </div>
+          </div> */}
           <div className={styles.price_block}>
             <div className={styles.price}>
               {event.price} ₽
             </div>
           </div>
         </div>
+        </Link>
       </div>
-    </Link>
+
   )
 }

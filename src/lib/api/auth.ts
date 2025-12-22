@@ -1,32 +1,16 @@
-import { cookies } from 'next/headers'
-import jwt from 'jsonwebtoken'
-import { Session } from '@/types/auth'
-
-interface JwtPayload {
-  sub: string
-  email: string
-  name: string
+import type { LoginRequest, RegisterRequest, TokenResponse } from '@/types/auth';
+import { ApiResult } from '@/types/api'
+import { apiFetch } from '../api-client'
+import { User } from '@/types';
+export async function login(body: LoginRequest) : Promise<ApiResult<TokenResponse>> {
+  return apiFetch('/auth/login', {method: "POST", body: body ? JSON.stringify(body) : undefined,});
 }
 
-const JWT_SECRET = process.env.JWT_SECRET!
+export async function register(body: RegisterRequest) : Promise<ApiResult<User>> {
+  return apiFetch('/auth/register', {method: "POST", body: body ? JSON.stringify(body) : undefined,});
+}
 
-export async function getSession(): Promise<Session | null> {
-  const cookieStore = await cookies()
-  const token = cookieStore.get('token')?.value
-
-  if (!token) return null
-
-  try {
-    const payload = jwt.verify(token, JWT_SECRET) as JwtPayload
-
-    return {
-      user: {
-        id: payload.sub,
-        email: payload.email,
-        name: payload.name,
-      },
-    }
-  } catch {
-    return null
-  }
+export async function setAuthToken(token: string) {
+  // сохраняем в cookies на клиенте
+  document.cookie = `token=${token}; path=/; max-age=900; SameSite=Strict`;
 }

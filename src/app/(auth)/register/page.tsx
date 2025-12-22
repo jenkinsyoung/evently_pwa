@@ -1,9 +1,5 @@
-import React from 'react'
+import AuthForm from "@/components/auth/AuthForm";
 
-function RegisterPage() {
-  return (
-    <div>RegisterPage</div>
-  )
+export default function LoginPage() {
+  return <AuthForm />;
 }
-
-export default RegisterPage

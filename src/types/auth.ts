@@ -34,3 +34,32 @@ export interface Session {
     name: string
   }
 }
+
+export interface LoginRequest {
+  login: string;
+  password: string;
+}
+
+export interface RegisterRequest {
+  login: string;
+  email: string;
+  password: string;
+  phone?: string;
+  name?: string;
+}
+
+export interface TokenResponse {
+  accessToken: string;
+  refreshToken: string;
+}
+
+export interface ApiError {
+  status: number;
+  message: string;
+}
+
+export interface ApiResult<T> {
+  ok: boolean;
+  data?: T;
+  error?: ApiError;
+}

@@ -1,47 +1,90 @@
-import React from 'react'
-import styles from "./Button.module.css"
+'use client';
+
+import React, { MouseEvent, KeyboardEvent } from 'react';
 import Link from 'next/link';
+import styles from "./Button.module.css";
 
-interface ButtonProps{
-  name: string,
-  func_type: 'link_type' | 'submit' | 'reset' | 'create_event' | 'edit_profile' 
-  href_btn?: string,
-  style?: 'purple' | 'gray'
+interface ButtonProps {
+  name: string;
+  func_type: 'link_type' | 'submit' | 'reset' | 'create_event' | 'edit_profile';
+  href_btn?: string;
+  style?: 'purple' | 'gray';
+  onClick?: () => void;  // ✅ Только без параметров
 }
 
-function Button({name, func_type, href_btn, style}: ButtonProps) {
-  return (
-    <>
-    {func_type == 'link_type' && href_btn != null ?  
-      <Link href={href_btn}>
-      <Btn name={name} func_type={func_type} style={style}/>
+const Button: React.FC<ButtonProps> = ({ 
+  name, 
+  func_type, 
+  href_btn, 
+  style = 'purple',
+  onClick 
+}) => {
+  
+  const handleClick = () => {
+    onClick?.();  // ✅ Без параметров
+  };
+
+  if (func_type === 'link_type' && href_btn) {
+    return (
+      <Link href={href_btn} className="block">
+        <Btn name={name} style={style} onClick={handleClick} />
       </Link>
-      :
-      <Btn name={name} func_type={func_type} style={style}/>
-    }
-    </>
-  )
-}
+    );
+  }
 
-export default Button
+  if (func_type === 'submit' || func_type === 'reset') {
+    return (
+      <button 
+        type={func_type}
+        className={style === 'gray' ? styles.gray_btn : styles.purple_btn}
+        onClick={() => onClick?.()}
+      >
+        {name}
+      </button>
+    );
+  }
 
-const handleClick = () => {
-    console.log('Button clicked!');
+  return (
+    <div 
+      className={style === 'gray' ? styles.gray_btn : styles.purple_btn}
+      onClick={handleClick}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e: KeyboardEvent<HTMLDivElement>) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleClick();  // ✅ Без параметров
+        }
+      }}
+    >
+      {name}
+    </div>
+  );
 };
 
-function Btn({name, func_type, style}: ButtonProps){
-  return(
-    <>
-    {style == 'gray' ? 
-      <div className={styles.gray_btn} onClick={handleClick}>
-        {name}
-      </div>
-      :
-      <div className={styles.purple_btn} onClick={handleClick}>
-        {name}
-      </div>
-    }
-    </>
-    
-  )
+interface BtnProps {
+  name: string;
+  style: 'purple' | 'gray';
+  onClick: () => void;  // ✅ Обязательный, без параметров
 }
+
+const Btn: React.FC<BtnProps> = ({ name, style, onClick }) => {
+  return (
+    <div 
+      className={style === 'gray' ? styles.gray_btn : styles.purple_btn}
+      onClick={onClick}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e: KeyboardEvent<HTMLDivElement>) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onClick();  // ✅ Без параметров
+        }
+      }}
+    >
+      {name}
+    </div>
+  );
+};
+
+export default Button;

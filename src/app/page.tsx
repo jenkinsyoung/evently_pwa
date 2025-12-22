@@ -4,6 +4,7 @@ import styles from '@/styles/pages/HomePage.module.css'
 import { Description } from '@/components/common/DescBox'
 import DescBox from '@/components/common/DescBox';
 import Button from '@/components/common/btn/Button';
+import PopularEvents from '@/components/events/PopularEvents';
 
 const events: Description[] = [
   {
@@ -49,11 +50,10 @@ export default function Home() {
           <h1>Готовы присоединиться?</h1>
           <div style={{marginTop: '19px', width: '279px'}}><Button name="Зарегистрироваться сейчас" func_type="link_type" href_btn="/register" /></div>
       </div>
-      <div className={styles.popular}>Самые популярные события недели</div>
+      {/* <div className={styles.popular}>Самые популярные события недели</div> */}
+      <div className={styles.popular}></div>
       <div className={styles.list_popular_events}>
-        {events.map((event, index)=><div key={index}>
-          <DescBox desc={event}></DescBox>
-        </div>)}
+        {/* <PopularEvents /> */}
       </div>
     </div>
   )

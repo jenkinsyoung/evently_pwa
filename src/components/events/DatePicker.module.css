@@ -1,0 +1,140 @@
+/* Обёртка календаря */
+.calendarWrapper {
+  background: #ffffff;
+  border: 1px solid rgba(125, 97, 138, 0.2);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  font-family: 'Manrope', sans-serif;
+}
+
+/* Стили для react-date-range (переопределяем дефолтные) */
+.calendarWrapper :global(.rdrDateRangeWrapper) {
+  color: #000000;
+}
+
+/* Заголовок месяца */
+.calendarWrapper :global(.rdrMonthAndYearWrapper) {
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(125, 97, 138, 0.15);
+  background: rgba(125, 97, 138, 0.03);
+}
+
+.calendarWrapper :global(.rdrMonthAndYearPickers) select {
+  background: transparent;
+  color: #000000;
+  font-weight: 500;
+  font-size: 14px;
+  border: 1px solid rgba(125, 97, 138, 0.3);
+  border-radius: 8px;
+  padding: 4px 8px;
+}
+
+/* Дни недели */
+.calendarWrapper :global(.rdrWeekDays) {
+  font-size: 12px;
+  color: #7d618a;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Обычные дни */
+.calendarWrapper :global(.rdrDayNumber span) {
+  color: #111111;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+/* Выбранный диапазон */
+.calendarWrapper :global(.rdrInRange),
+.calendarWrapper :global(.rdrDayInRange) {
+  background: rgba(125, 97, 138, 0.12) !important;
+}
+
+.calendarWrapper :global(.rdrSelected),
+.calendarWrapper :global(.rdrDayStartPreview),
+.calendarWrapper :global(.rdrDayEndPreview) {
+  background: #7d618a !important;
+}
+
+.calendarWrapper :global(.rdrSelected span),
+.calendarWrapper :global(.rdrDayStartPreview span),
+.calendarWrapper :global(.rdrDayEndPreview span) {
+  color: #ffffff !important;
+  background: #7d618a !important;
+  border-radius: 50%;
+}
+
+/* Hover эффект */
+.calendarWrapper :global(.rdrDay:hover span) {
+  background: rgba(125, 97, 138, 0.08) !important;
+  border-radius: 50%;
+}
+
+/* Disabled дни */
+.calendarWrapper :global(.rdrDayDisabled span),
+.calendarWrapper :global(.rdrDayPassive span) {
+  color: #b8b8b8 !important;
+}
+
+/* Кнопки действий */
+.actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(125, 97, 138, 0.15);
+}
+
+.resetBtn {
+  background: none;
+  border: none;
+  color: #76048a;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.resetBtn:hover {
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+}
+
+.applyBtn {
+  background: #7d618a;
+  color: #ffffff;
+  border: none;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.applyBtn:hover {
+  background: #6b5177;
+}
+
+.selectedInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.selectedLabel {
+  font-size: 12px;
+  color: #6b7280; /* серый */
+}
+
+.selectedValue {
+  font-size: 14px;
+  font-weight: 500;
+  color: #111827; /* почти черный */
+}

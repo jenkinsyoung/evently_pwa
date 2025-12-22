@@ -1,114 +1,60 @@
-"use client"
+import React from 'react';
+import UserProfileContent from '@/components/profile/UserProfile';
+import { getUserByID } from '@/lib/api/user-api';
+import { cookies } from 'next/headers';
+import { Link } from 'lucide-react';
 
-import Button from '@/components/common/btn/Button'
-import React from 'react'
-import styles from '@/styles/pages/ProfilePage.module.css'
-import {user} from '@/types'
-import { useState, useEffect } from 'react'
-import { Event } from '@/types'
-function AccountPage() {
-  return (
-    <ProfileContent />
-  )
+async function getCurrentUserId() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value;
+  
+  if (!token) return null;
+  
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return payload.sub;
+  } catch {
+    return null;
+  }
 }
 
-export default AccountPage
-
-
-function ProfileContent(){
-    return(
-        <div className={styles.content}>
-            <div className={styles.about}>
-                <div className={styles.main_info}>
-                    <div className={styles.avatar} style={{backgroundImage: `url(${user.avatar})`}}/>
-                    <div >
-                        <div className={styles.nickname}>
-                        {user.firstName} {user.lastName}
-                        </div>
-                        <div className={styles.location}>
-                            {user.location}
-                        </div>
-                        <div className={styles.followers}>
-                            {0} подписчиков ● {0} подписок
-                        </div>
-                    </div>
-                </div>
-                <div className={styles.act_btns}>
-                    <Button name = 'Создать событие' func_type = 'create_event' style='gray'/>
-                    <Button name = 'Редактировать профиль' func_type = 'edit_profile'/>
-                </div>
-                <div className={styles.about_info}>
-                    {user.bio} 
-                </div>
-            </div>
-            <EventsInProfile />
-
-        </div>
-    )
-}
-
-function EventsInProfile(){
-    return(
-        <div>
-            <EventNavigation />
-        </div>
-    )
-}
-
-const fetchEvents = async (category: string): Promise<Event[]> => {
-const res = await fetch(`/api/events?category=${category}`);
-return res.json();
-};
-
-
-function EventNavigation() {
-    const [activeTab, setActiveTab] = useState("my");
-    const [events, setEvents] = useState<Event[]>([]);
-
-
-    useEffect(() => {
-    fetchEvents(activeTab).then(setEvents);
-    }, [activeTab]);
-
-
+export default async function AccountPage() {
+  const userId = await getCurrentUserId();
+  
+  if (!userId) {
     return (
-        <div className="w-full p-6">
-            <div className="flex justify-center gap-10 mb-6 text-lg font-semibold">
-            <button
-            className={activeTab === "my" ? "text-purple-600" : "text-gray-500"}
-            onClick={() => setActiveTab("my")}
-            >
-            Мои мероприятия
-            </button>
-            <button
-            className={activeTab === "going" ? "text-purple-600" : "text-gray-500"}
-            onClick={() => setActiveTab("going")}
-            >
-            Я иду
-            </button>
-            <button
-            className={activeTab === "past" ? "text-purple-600" : "text-gray-500"}
-            onClick={() => setActiveTab("past")}
-            >
-            Прошедшие события
-            </button>
-            </div>
-
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {events.map((event) => (
-            <EventCardInProfile key={event.id} />
-            ))}
-            </div>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center p-8">
+          <h1 className="text-2xl font-bold mb-4">Войдите в аккаунт</h1>
+          <a href="/auth/login" className="bg-purple-600 text-white px-6 py-2 rounded-xl">
+            Войти
+          </a>
         </div>
+      </div>
     );
-}
+  }
 
-function EventCardInProfile(){
-    return(
-        <div>
-            <div />
-
+  const result = await getUserByID(userId);
+  
+  if (!result.ok || !result.data) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center p-8">
+          <h1 className="text-2xl font-bold mb-4">Профиль не найден</h1>
+          id = {userId}
+          <Link href="/events" className="bg-gray-600 text-white px-6 py-2 rounded-xl">
+            На главную
+          </Link>
         </div>
-    )
+      </div>
+    );
+  }
+
+  return (
+    <UserProfileContent 
+      user={result.data}    // ✅ Готовые данные
+      userId={userId}       // ✅ ID из токена
+      isOwner={true}        // ✅ Всегда свой профиль
+    />
+  );
 }
